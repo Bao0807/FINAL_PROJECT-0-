@@ -67,11 +67,13 @@ void addOrder(Queue &q, int &idCounter)
     Order o;
     o.id = ++idCounter;
 
-    cout << "Customer name: ";
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    displayTables();
+    cout << "Ten khach hang: ";
+    cin.ignore();
     getline(cin, o.customerName);
 
     int tableNum = chooseTable();
+    if (tableNum == 0) return;
     o.tableNumber = tableNum;
     gTableStatus[o.tableNumber - 1] = "Full";
     gTableOwner[o.tableNumber - 1] = o.id;
@@ -82,35 +84,34 @@ void addOrder(Queue &q, int &idCounter)
     {
         if (o.itemCount >= MAX_ITEMS)
         {
-            cout << "Reached max items!\n";
+            cout << "Da dat so luong toi da!\n";
             break;
         }
 
         displayMenu();
-        cin.ignore();
-        cout << "Choose food (number or exact name): ";
+        cout << "Chon mon an (theo ten hoac STT): ";
         string inputFood;
         getline(cin, inputFood);
         MenuItem sel = getMenuItem(inputFood);
 
         if (!sel.available || sel.price == 0)
         {
-            cout << "Invalid choice or sold out.\n";
+            cout << "Lua chon khong hop le hoac da het hang.\n";
             enter();
             continue;
         }
 
         OrderDetail d;
         d.foodName = sel.foodName;
-        cout << "Quantity: ";
+        cout << "So luong: ";
         if (!(cin >> d.quantity) || d.quantity <= 0)
         {
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "Invalid quantity.\n";
+            cin.ignore();
+            cout << "So luong khong hop le.\n";
             continue;
         }
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.ignore();
 
         d.price = sel.price;
         d.subtotal = d.price * d.quantity;
@@ -120,9 +121,9 @@ void addOrder(Queue &q, int &idCounter)
         o.items[o.itemCount++] = d;
         o.total += d.subtotal;
 
-        cout << "Add more food? (y/n): ";
+        cout << "Them mot mon khac? (y/n): ";
         cin >> more;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.ignore();
     } while (more == 'y' || more == 'Y');
 
     o.totalRemainingTime = 0;
@@ -134,20 +135,18 @@ void addOrder(Queue &q, int &idCounter)
     allOrders[o.id] = o;
     ListPending.add(o.id);
 
-    cout << "\x1b[32mSaved order ID " << o.id << " (Pending)\x1b[0m\n";
-    cout << "Print temporary bill (start cooking)? (y/n): ";
+    cout << "\x1b[32mDa luu ID don hang." << o.id << " (Dang cho xu li)\x1b[0m\n";
+    cout << "In hoa don tam thoi (bat dau lam mon)? (y/n): ";
     char choice;
     cin >> choice;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.ignore();
 
-    if (choice == 'y' || choice == 'Y')
-    {
+    if (choice == 'y' || choice == 'Y'){
         Order &ref = allOrders[o.id];
         ref.status = hasCooking(q) ? "Wait" : "Cooking";
 
-        if (!enqueue(q, ref))
-        {
-            cout << "Queue full! Order remains pending.\n";
+        if (!enqueue(q, ref)){
+            cout << "Hang doi da day! Hoa don giu nguyen trang thai cho xu li.\n";
         }
         else
         {
@@ -164,10 +163,8 @@ void addOrder(Queue &q, int &idCounter)
             cout << "[Temp bill] -> " << ref.status << "\n";
             startTimer(&q);
         }
-    }
-    else
-    {
-        cout << "Order saved as Pending.\n";
+    } else{
+        cout << "Da luu don hang (trang thai cho nau).\n";
     }
 
     enter();
@@ -181,23 +178,23 @@ void displayQueue(Queue &q)
     while (true)
     {   
         displayTables();
-        cout << "\n===== PENDING ORDERS =====\n";
+        cout << "\n===== DON HANG CHUA XU LI =====\n";
         if (ListPending.getSize() == 0)
-            cout << "No pending orders.\n";
+            cout << "Khong co hoa don chua xu li.\n";
         else
             for (int i = 0; i < ListPending.getSize(); ++i)
                 printOrderRow(allOrders[ListPending.getValue(i)]);
 
-        cout << "\n===== ORDERS IN QUEUE =====\n";
+        cout << "\n===== DON HANG DANG XU LI =====\n";
         if (q.count == 0)
-            cout << "No orders in queue.\n";
+            cout << "Khong co hoa don dang xu li.\n";
         else
             for (int i = 0; i < q.count; i++)
                 printOrderRow(q.orders[(q.front + i) % MAX]);
 
-        cout << "\n===== DONE ORDERS =====\n";
+        cout << "\n===== DON HANG DA HOAN THANH =====\n";
         if (ListDone.getSize() == 0)
-            cout << "No done orders.\n";
+            cout << "Khong co hoa don da hoan thanh.\n";
         else
             for (int i = 0; i < ListDone.getSize(); ++i)
                 printOrderRow(allOrders[ListDone.getValue(i)]);
@@ -207,10 +204,10 @@ void displayQueue(Queue &q)
         if (!(cin >> act))
         {
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore();
             continue;
         }
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.ignore();
 
         if (act == 1)
         {
@@ -218,7 +215,7 @@ void displayQueue(Queue &q)
             int id;
             cout << "Enter ID to delete: ";
             cin >> id;
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore();
 
             Order *f = findOrderByID(q, id);
             if (!f)
@@ -281,7 +278,7 @@ void displayQueue(Queue &q)
             cout << "Ten hien tai: " << f->customerName << "\n";
             cout << "Nhap ten moi (hoac '.' de giu nguyen): ";
             string name;
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore();
             getline(cin, name);
             if (name != ".") f->customerName = name;
 
@@ -295,7 +292,7 @@ void displayQueue(Queue &q)
             char c; cin >> c;
             if (c == 'y' || c == 'Y')
             {
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.ignore();
                 char more = 'y';
                 do
                 {
@@ -307,7 +304,7 @@ void displayQueue(Queue &q)
                     {
                         cout << "Mon khong hop le.\n";
                         cout << "Them tiep? (y/n): ";
-                        cin >> more; cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        cin >> more; cin.ignore();
                         continue;
                     }
 
@@ -315,13 +312,13 @@ void displayQueue(Queue &q)
                     d.foodName = sel.foodName;
                     cout << "So luong: ";
                     if (!(cin >> d.quantity) || d.quantity <= 0) {
-                        cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        cin.clear(); cin.ignore();
                         cout << "So luong khong hop le.\n";
                         cout << "Them tiep? (y/n): ";
-                        cin >> more; cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        cin >> more; cin.ignore();
                         continue;
                     }
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cin.ignore();
 
                     d.price = sel.price;
                     d.subtotal = d.price * d.quantity;
@@ -332,7 +329,7 @@ void displayQueue(Queue &q)
                     f->total += d.subtotal;
 
                     cout << "Them tiep? (y/n): ";
-                    cin >> more; cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cin >> more; cin.ignore();
                 } while (more == 'y' || more == 'Y');
 
                 f->totalRemainingTime = 0;
@@ -348,7 +345,7 @@ void displayQueue(Queue &q)
             cout << "Enter ID to temp-bill: ";
             int id;
             cin >> id;
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore();
 
             Order *f = findOrderByID(q, id);
             if (!f)

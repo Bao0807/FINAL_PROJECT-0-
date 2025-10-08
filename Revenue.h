@@ -97,6 +97,5 @@ void viewRevenueSummary()
     for (int i = 0; i < cc; i++)
         cout << " - " << cnt[i].name << ": " << cnt[i].qty << "\n";
     cout << "=======================\n";
-    cin.ignore();
     enter();
 }

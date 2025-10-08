@@ -94,7 +94,7 @@ struct HashTable {
 
     
     void loadData(){
-        add("admin", "admin"); //user mac dinh
+        add("admin", "1"); //user mac dinh
         add("nhanvien1", "nhanvien");
         add("0123456789", "admin2");
         add("admin@gmail.com", "admin3");
@@ -102,6 +102,9 @@ struct HashTable {
 };
 
 void login(){
+    bool debug = true;
+    if (debug) return;\
+    
     HashTable registeredUsers;
     registeredUsers.loadData();
     
@@ -113,7 +116,7 @@ void login(){
     cout << "\t\t\x1b[34mHE THONG QUAN LY NHA HANG\t\t\x1b[0m\n\n";
     cout << "Ten tai khoan: \n";
     cout << "Mat khau: \n";
-    cout << "\n\n\x1b[3mMac dinh: admin - admin\nDe xem danh sach ma (ID) nhan vien: nhap admin::list o phan Ten tai khoan\n\x1b[0m\n\x1b[5F";
+    cout << "\n\n\x1b[3mMac dinh: admin - 1\nDe xem danh sach ID nhan vien: admin::list\n\x1b[0m\n\x1b[5F";
 
     while (true){
         cout << "\x1b[2F\x1b[15C";
