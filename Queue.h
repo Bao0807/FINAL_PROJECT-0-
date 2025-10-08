@@ -11,14 +11,14 @@ struct Queue {
     int count = 0;
 };
 
-bool isEmpty(Queue &q);
-bool isFull(Queue &q);
-bool enqueue(Queue &q, const Order &o);
-bool dequeue(Queue &q, Order &o);
 
-// Implementations
-bool isEmpty(Queue &q) { return q.count == 0; }
-bool isFull(Queue &q)  { return q.count == MAX; }
+bool isEmpty(Queue &q){
+    return q.count == 0;
+}
+
+bool isFull(Queue &q){
+    return q.count == MAX;
+}
 
 bool enqueue(Queue &q, const Order &o) {
     if (isFull(q)) return false;

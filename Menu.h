@@ -25,8 +25,8 @@ void searchFoodNaive();
 
 void enter(){
     cout << "\nPress Enter to continue...";
-    string _tmp;
-    getline(cin, _tmp);
+    cin.ignore();
+    cin.get();
 }
 
 MenuItem menuList[] = {

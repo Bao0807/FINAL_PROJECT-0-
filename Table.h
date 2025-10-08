@@ -14,10 +14,8 @@ void displayTables();
 int chooseTable();
 bool anyOrderForTable(Queue &q, int tableNo);
 
-void clearScreen()
-{
-    cout << "\x1b[2J\x1b[H\x1b[0m";
-    cout.flush();
+void clearScreen(){
+    system("cls");
 }
 
 void initTables()
@@ -97,26 +95,37 @@ int chooseTable()
         // mỗi lần chọn bàn hiển thị trên màn hình sạch
         clearScreen();
         displayTables();
-        int t = 0;
-        cout << "Choose table (1-" << NUM_TABLES << "): ";
-        if (!(cin >> t))
-        {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "Invalid input.\n";
+        string tIn;
+        cout << "Chon so ban can dat mon (0 de quay lai), (1-" << NUM_TABLES << "): ";
+        cin >> tIn;
+        try {
+            int t = stoi(tIn);
+
+            if (t == 0) {
+                cin.ignore();
+                return t;
+            }
+
+            if (t < 1 || t > NUM_TABLES){
+                cout << "So ban khong hop le!\n";
+                cin.ignore(); cin.get();
+                continue;
+            }
+
+            if (gTableStatus[t - 1] == "Full"){
+                cout << "Ban so " << t << " da day!\n";
+                cin.ignore(); cin.get();
+                continue;
+            }
+
+            cin.ignore();
+            return t;
+        } catch (const invalid_argument&) {
+            cout << "Input khong hop le! Vui long nhap so.\n";
+            cin.ignore();
+            cin.get();
             continue;
         }
-        if (t < 1 || t > NUM_TABLES)
-        {
-            cout << "Out of range.\n";
-            continue;
-        }
-        if (gTableStatus[t - 1] == "Full")
-        {
-            cout << "Table is Full.\n";
-            continue;
-        }
-        return t;
     }
 }
 
