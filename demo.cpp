@@ -2,8 +2,6 @@
 #include "auth.h"
 using namespace std;
 
-IntList ListPending;
-IntList ListDone;
 Order allOrders[MAX_ORDERS];
 void showMainMenu();
 
