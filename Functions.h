@@ -67,7 +67,8 @@ void addOrder(Queue &q, int &idCounter)
     Order o;
     o.id = ++idCounter;
 
-    cout << "Customer name: ";
+    displayTables();
+    cout << "Ten khach hang: ";
     cin.ignore();
     getline(cin, o.customerName);
 
@@ -83,31 +84,31 @@ void addOrder(Queue &q, int &idCounter)
     {
         if (o.itemCount >= MAX_ITEMS)
         {
-            cout << "Reached max items!\n";
+            cout << "Da dat so luong toi da!\n";
             break;
         }
 
         displayMenu();
-        cout << "Choose food (number or exact name): ";
+        cout << "Chon mon an (theo ten hoac STT): ";
         string inputFood;
         getline(cin, inputFood);
         MenuItem sel = getMenuItem(inputFood);
 
         if (!sel.available || sel.price == 0)
         {
-            cout << "Invalid choice or sold out.\n";
+            cout << "Lua chon khong hop le hoac da het hang.\n";
             enter();
             continue;
         }
 
         OrderDetail d;
         d.foodName = sel.foodName;
-        cout << "Quantity: ";
+        cout << "So luong: ";
         if (!(cin >> d.quantity) || d.quantity <= 0)
         {
             cin.clear();
             cin.ignore();
-            cout << "Invalid quantity.\n";
+            cout << "So luong khong hop le.\n";
             continue;
         }
         cin.ignore();
@@ -120,7 +121,7 @@ void addOrder(Queue &q, int &idCounter)
         o.items[o.itemCount++] = d;
         o.total += d.subtotal;
 
-        cout << "Add more food? (y/n): ";
+        cout << "Them mot mon khac? (y/n): ";
         cin >> more;
         cin.ignore();
     } while (more == 'y' || more == 'Y');
@@ -134,20 +135,18 @@ void addOrder(Queue &q, int &idCounter)
     allOrders[o.id] = o;
     ListPending.add(o.id);
 
-    cout << "\x1b[32mSaved order ID " << o.id << " (Pending)\x1b[0m\n";
-    cout << "Print temporary bill (start cooking)? (y/n): ";
+    cout << "\x1b[32mDa luu ID don hang." << o.id << " (Dang cho xu li)\x1b[0m\n";
+    cout << "In hoa don tam thoi (bat dau lam mon)? (y/n): ";
     char choice;
     cin >> choice;
     cin.ignore();
 
-    if (choice == 'y' || choice == 'Y')
-    {
+    if (choice == 'y' || choice == 'Y'){
         Order &ref = allOrders[o.id];
         ref.status = hasCooking(q) ? "Wait" : "Cooking";
 
-        if (!enqueue(q, ref))
-        {
-            cout << "Queue full! Order remains pending.\n";
+        if (!enqueue(q, ref)){
+            cout << "Hang doi da day! Hoa don giu nguyen trang thai cho xu li.\n";
         }
         else
         {
@@ -164,10 +163,8 @@ void addOrder(Queue &q, int &idCounter)
             cout << "[Temp bill] -> " << ref.status << "\n";
             startTimer(&q);
         }
-    }
-    else
-    {
-        cout << "Order saved as Pending.\n";
+    } else{
+        cout << "Da luu don hang (trang thai cho nau).\n";
     }
 
     enter();
@@ -181,23 +178,23 @@ void displayQueue(Queue &q)
     while (true)
     {   
         displayTables();
-        cout << "\n===== PENDING ORDERS =====\n";
+        cout << "\n===== DON HANG CHUA XU LI =====\n";
         if (ListPending.getSize() == 0)
-            cout << "No pending orders.\n";
+            cout << "Khong co hoa don chua xu li.\n";
         else
             for (int i = 0; i < ListPending.getSize(); ++i)
                 printOrderRow(allOrders[ListPending.getValue(i)]);
 
-        cout << "\n===== ORDERS IN QUEUE =====\n";
+        cout << "\n===== DON HANG DANG XU LI =====\n";
         if (q.count == 0)
-            cout << "No orders in queue.\n";
+            cout << "Khong co hoa don dang xu li.\n";
         else
             for (int i = 0; i < q.count; i++)
                 printOrderRow(q.orders[(q.front + i) % MAX]);
 
-        cout << "\n===== DONE ORDERS =====\n";
+        cout << "\n===== DON HANG DA HOAN THANH =====\n";
         if (ListDone.getSize() == 0)
-            cout << "No done orders.\n";
+            cout << "Khong co hoa don da hoan thanh.\n";
         else
             for (int i = 0; i < ListDone.getSize(); ++i)
                 printOrderRow(allOrders[ListDone.getValue(i)]);

@@ -59,8 +59,8 @@ void makeSquare(string box[], const string &text1, const string &text2, bool isF
     box[HEIGHT - 1] = topBottom;
 }
 
-void displayTables()
-{
+void displayTables(){
+    cout << "\t\t\t\t\t     XU LI DON DAT HANG    \t\t\t\t\t\n";
     string boxes[NUM_TABLES][HEIGHT];
 
     // Tạo toàn bộ 10 ô (TABLE + trạng thái)
