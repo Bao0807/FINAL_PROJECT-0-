@@ -17,8 +17,8 @@ using namespace std;
 
 // ======= Global lists for FIFO pipeline =======
 const int MAX_ORDERS = 1000;
-extern IntList ListPending;                 // IDs đơn ở trạng thái Pending
-extern IntList ListDone;                    // IDs đơn đã Done (chờ thanh toán)
+IntList ListPending = IntList();                 // IDs đơn ở trạng thái Pending
+IntList ListDone = IntList();                 // IDs đơn đã Done (chờ thanh toán)
 extern Order   allOrders[MAX_ORDERS];       // Bản sao đơn theo ID
 
 // ===== timer globals =====
