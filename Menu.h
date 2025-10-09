@@ -177,7 +177,7 @@ void updateFoodStatus() {
     cout << "Enter new status (1 = Available, 0 = Sold out): ";
     int newStatus;
     cin >> newStatus;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.ignore();
 
     if (newStatus != 0 && newStatus != 1) {
         cout << "\x1b[31mInvalid input. Must be 1 or 0.\x1b[0m\n";
@@ -208,9 +208,8 @@ bool containsNaive(const string &text, const string &pattern) {
     return false;
 }
 
-// ======================= SEARCH FOOD BY NAME ===========================
 void searchFoodNaive() {
-    cout << "\x1b[36m\n================ SEARCH FOOD ================\x1b[0m\n";
+    cout << "\x1b[36m\n================ TIM MON AN ================\x1b[0m\n";
     cout << "Enter keyword to search: ";
     string keyword;
     getline(cin, keyword);
@@ -235,10 +234,10 @@ void searchFoodNaive() {
     }
 
     if (!found) {
-        cout << "\x1b[31mNo food found with keyword: \x1b[33m" << keyword << "\x1b[0m\n";
+        cout << "\x1b[31mKhong tim thay mon voi tu khoa: \x1b[33m" << keyword << "\x1b[0m\n";
     }
 
-    cout << "\x1b[36m=============================================================\x1b[0m\n";
+    cout << "\x1b[36m=========================================================================\x1b[0m\n";
     enter();
 }
 

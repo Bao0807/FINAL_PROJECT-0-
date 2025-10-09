@@ -24,3 +24,4 @@ OrderID: 23 | Total: 560000 | Items: Bun Dau Mam Tomx4
 OrderID: 25 | Total: 740000 | Items: Pho Kho Gia Laix4, Com Tam Sai Gonx2
 OrderID: 24 | Total: 1520000 | Items: Pho Ha Noix8, Bun Dau Mam Tomx4
 OrderID: 26 | Total: 2370000 | Items: Pho Ha Noix10, Com Tam Sai Gonx9
+OrderID: 1 | Total: 120000 | Items: Pho Ha Noix1

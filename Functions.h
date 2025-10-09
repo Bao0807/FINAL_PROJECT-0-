@@ -56,21 +56,16 @@ bool removeOrderByID(Queue &q, int id, Order &out);
 void advanceTime(Queue &q, int seconds);
 void startTimer(Queue *qp);
 
-// ===================================================================
-// Add Order: tạo đơn -> vào ListPending (Pending). Chỉ khi in bill tạm
-// mới chuyển sang Cooking/Wait và enqueue vào Queue.
-// ===================================================================
 void addOrder(Queue &q, int &idCounter){
     clearScreen();
     Order o;
     o.id = ++idCounter;
 
-    cout << "\x1b[36m+" << string(48,'-') << "+ SO BAN +" << string(48,'-') << "+\x1b[0m\n";
-    displayTables();
     cout << "Ten khach hang: ";
     cin.ignore();
     getline(cin, o.customerName);
 
+    displayTables();
     int tableNum = chooseTable();
     if (tableNum == 0) return;
     o.tableNumber = tableNum;
@@ -137,7 +132,6 @@ void addOrder(Queue &q, int &idCounter){
     cout << "In hoa don tam thoi (bat dau lam mon)? (y/n): ";
     char choice;
     cin >> choice;
-    cin.ignore();
 
     if (choice == 'y' || choice == 'Y'){
         Order &ref = allOrders[o.id];
@@ -168,40 +162,35 @@ void addOrder(Queue &q, int &idCounter){
     enter();
 }
 
-// ===================================================================
-// Display Queue: show Pending, Queue, Done + thao tác
-// ===================================================================
 void displayQueue(Queue &q)
 {
     while (true)
     {   
-        cout << "\x1b[36m+" << string(48,'-') << "+ SO BAN +" << string(48,'-') << "+\x1b[0m\n";
         displayTables();
         cout << "\t\t\t\t\t==== DON HANG CHUA XU LI ====\n";
         if (ListPending.getSize() == 0)
-            cout << "Khong co hoa don chua xu li.\n";
+            cout << "Khong co don chua xu li.\n";
         else
             for (int i = 0; i < ListPending.getSize(); i++)
                 printOrderRow(allOrders[ListPending.getValue(i)]);
 
-        cout << "\n===== DON HANG DANG XU LI =====\n";
+        cout << "\n\t\t\t\t\t==== DON HANG DANG XU LI ====\n";
         if (q.right < 0)
-            cout << "Khong co hoa don dang xu li.\n";
+            cout << "Khong co don dang xu li.\n";
         else
             for (int i = 0; i <= q.right; i++)
                 printOrderRow(q.orders[i]);
 
-        cout << "\n===== DON HANG DA HOAN THANH =====\n";
+        cout << "\n\t\t\t\t\t=== DON HANG DA HOAN THANH ===\n";
         if (ListDone.getSize() == 0)
-            cout << "Khong co hoa don da hoan thanh.\n";
+            cout << "Khong co don da hoan thanh.\n";
         else
             for (int i = 0; i < ListDone.getSize(); i++)
                 printOrderRow(allOrders[ListDone.getValue(i)]);
 
-        cout << "Lua chon: 1 - Xoa | 2 - Sua | 3 - Hoa don tam thoi | 4 - Lam moi | 0 - Quay lai\nLua chon: ";
+        cout << "\nCac lua chon: 1 - Xoa | 2 - Sua | 3 - Hoa don tam thoi | 4 - Lam moi | 0 - Quay lai\nLua chon: ";
         int act;
-        if (!(cin >> act))
-        {
+        if (!(cin >> act)){
             cin.clear();
             cin.ignore();
             continue;
@@ -298,8 +287,7 @@ void displayQueue(Queue &q)
                     cout << "Nhap ten mon hoac so: ";
                     string food; getline(cin, food);
                     MenuItem sel = getMenuItem(food);
-                    if (!sel.available || sel.price == 0)
-                    {
+                    if (!sel.available || sel.price == 0){
                         cout << "Mon khong hop le.\n";
                         cout << "Them tiep? (y/n): ";
                         cin >> more; cin.ignore();
@@ -369,13 +357,13 @@ void displayQueue(Queue &q)
                 }
                 else cout << "Khong tim thay don hang.\n";
             }
-            else
-            {
+            else{
                 f->status = hasCooking(q) ? "Wait" : "Cooking";
                 printBill(*f);
                 cout << "[Temp bill] -> " << f->status << "\n";
                 startTimer(&q);
             }
+            enter();
         }
         else if (act == 4)
         {
@@ -386,9 +374,7 @@ void displayQueue(Queue &q)
     }
 }
 
-// ===================================================================
-// Search Customer (naive, tìm ở cả Queue, Pending, Done)
-// ===================================================================
+
 void searchCustomer(Queue &q)
 {
     if (q.right < 0 && ListPending.getSize() == 0 && ListDone.getSize() == 0)
@@ -421,9 +407,7 @@ void searchCustomer(Queue &q)
     if (!found) cout << "Khong tim thay.\n";
 }
 
-// ===================================================================
-// Timer: tự động giảm 1s/lần, chuyển Done tự động, không in/log
-// ===================================================================
+
 void advanceTime(Queue &q, int seconds)
 {
     if (seconds <= 0 || q.right < 0) return;
@@ -489,12 +473,10 @@ void startTimer(Queue *qp)
             this_thread::sleep_for(chrono::seconds(1));
         }
     });
-    g_timerThread.detach(); // đơn giản hoá, không cần join khi thoát
+    g_timerThread.detach(); 
 }
 
-// ===================================================================
-// Utils: find/remove in Queue, getLastOrderID (robust hơn)
-// ===================================================================
+
 Order *findOrderByID(Queue &q, int id)
 {
     for (int i = 0; i <= q.right; i++)

@@ -56,8 +56,8 @@ void showMainMenu(){
 
 void manageMenu(){
     header();
-    cout << "\x1b[33m1.\x1b[0m Tim theo ten mon an\n";
-    cout << "\x1b[33m2.\x1b[0m Tim theo ten khach hang\n";
+    cout << "\x1b[33m1.\x1b[0m Tim mon an theo tu khoa\n";
+    cout << "\x1b[33m2.\x1b[0m Tim ID don hang theo ten khach hang\n";
     cout << "\n\n\n\n"; 
     cout << "\x1b[31m0.\x1b[0m Quay lai\n";
     footer();

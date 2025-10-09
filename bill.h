@@ -131,7 +131,6 @@ void saveBillToFile(const Order &o)
 void payment(Queue &q)
 {
     clearScreen();
-    cout << "\x1b[36m===== THANH TOAN HOA DON (GOP THEO ID) =====\x1b[0m\n";
     displayTables();
 
     int tableNo;
@@ -159,9 +158,7 @@ void payment(Queue &q)
 
     if (baseId == 0) {
         cout << "Khong co don hang nao cho ban nay.\n";
-        cin.ignore();
-        cout << "\nNhan Enter de tiep tuc...";
-        string tmp; getline(cin, tmp);
+        enter();
         return;
     }
 

@@ -57,6 +57,7 @@ void makeSquare(string box[], const string &text1, const string &text2, bool isF
 }
 
 void displayTables(){
+    cout << "\x1b[36m+" << string(48,'-') << "+ SO BAN +" << string(48,'-') << "+\x1b[0m\n";
     string boxes[NUM_TABLES][HEIGHT];
 
     // Tạo toàn bộ 10 ô (TABLE + trạng thái)
