@@ -29,10 +29,9 @@ Queue *g_queuePtr = nullptr;
 // ===== Helpers =====
 static inline bool hasCooking(Queue &q)
 {
-    for (int i = 0; i < q.count; ++i)
+    for (int i = 0; i <= q.right; i++)
     {
-        int idx = (q.front + i) % MAX;
-        if (q.orders[idx].status == "Cooking") return true;
+        if (q.orders[i].status == "Cooking") return true;
     }
     return false;
 }
@@ -61,12 +60,12 @@ void startTimer(Queue *qp);
 // Add Order: tạo đơn -> vào ListPending (Pending). Chỉ khi in bill tạm
 // mới chuyển sang Cooking/Wait và enqueue vào Queue.
 // ===================================================================
-void addOrder(Queue &q, int &idCounter)
-{
+void addOrder(Queue &q, int &idCounter){
     clearScreen();
     Order o;
     o.id = ++idCounter;
 
+    cout << "\x1b[36m+" << string(48,'-') << "+ SO BAN +" << string(48,'-') << "+\x1b[0m\n";
     displayTables();
     cout << "Ten khach hang: ";
     cin.ignore();
@@ -79,7 +78,7 @@ void addOrder(Queue &q, int &idCounter)
     gTableOwner[o.tableNumber - 1] = o.id;
 
     clearScreen();
-    char more = 'n';
+    char more = 'y';
     do
     {
         if (o.itemCount >= MAX_ITEMS)
@@ -104,8 +103,7 @@ void addOrder(Queue &q, int &idCounter)
         OrderDetail d;
         d.foodName = sel.foodName;
         cout << "So luong: ";
-        if (!(cin >> d.quantity) || d.quantity <= 0)
-        {
+        if (!(cin >> d.quantity) || d.quantity <= 0){
             cin.clear();
             cin.ignore();
             cout << "So luong khong hop le.\n";
@@ -151,7 +149,7 @@ void addOrder(Queue &q, int &idCounter)
         else
         {
             // Bỏ khỏi Pending
-            for (int i = 0; i < ListPending.getSize(); ++i)
+            for (int i = 0; i < ListPending.getSize(); i++)
             {
                 if (ListPending.getValue(i) == ref.id)
                 {
@@ -177,29 +175,30 @@ void displayQueue(Queue &q)
 {
     while (true)
     {   
+        cout << "\x1b[36m+" << string(48,'-') << "+ SO BAN +" << string(48,'-') << "+\x1b[0m\n";
         displayTables();
-        cout << "\n===== DON HANG CHUA XU LI =====\n";
+        cout << "\t\t\t\t\t==== DON HANG CHUA XU LI ====\n";
         if (ListPending.getSize() == 0)
             cout << "Khong co hoa don chua xu li.\n";
         else
-            for (int i = 0; i < ListPending.getSize(); ++i)
+            for (int i = 0; i < ListPending.getSize(); i++)
                 printOrderRow(allOrders[ListPending.getValue(i)]);
 
         cout << "\n===== DON HANG DANG XU LI =====\n";
-        if (q.count == 0)
+        if (q.right < 0)
             cout << "Khong co hoa don dang xu li.\n";
         else
-            for (int i = 0; i < q.count; i++)
-                printOrderRow(q.orders[(q.front + i) % MAX]);
+            for (int i = 0; i <= q.right; i++)
+                printOrderRow(q.orders[i]);
 
         cout << "\n===== DON HANG DA HOAN THANH =====\n";
         if (ListDone.getSize() == 0)
             cout << "Khong co hoa don da hoan thanh.\n";
         else
-            for (int i = 0; i < ListDone.getSize(); ++i)
+            for (int i = 0; i < ListDone.getSize(); i++)
                 printOrderRow(allOrders[ListDone.getValue(i)]);
 
-        cout << "\nOptions: 1-Delete  2-Edit  3-Temp bill  4-Refresh  0-Back\nChoice: ";
+        cout << "Lua chon: 1 - Xoa | 2 - Sua | 3 - Hoa don tam thoi | 4 - Lam moi | 0 - Quay lai\nLua chon: ";
         int act;
         if (!(cin >> act))
         {
@@ -213,7 +212,7 @@ void displayQueue(Queue &q)
         {
             // Xoá: chỉ cho Pending hoặc đơn trong Queue nhưng KHÔNG Cooking/Done
             int id;
-            cout << "Enter ID to delete: ";
+            cout << "ID don hang can xoa: ";
             cin >> id;
             cin.ignore();
 
@@ -222,7 +221,7 @@ void displayQueue(Queue &q)
             {
                 // thử Pending
                 int pendIdx = -1;
-                for (int i = 0; i < ListPending.getSize(); ++i)
+                for (int i = 0; i < ListPending.getSize(); i++)
                     if (ListPending.getValue(i) == id) { pendIdx = i; break; }
 
                 if (pendIdx != -1)
@@ -231,16 +230,16 @@ void displayQueue(Queue &q)
                     ListPending.removeAt(pendIdx);
                     gTableStatus[t - 1] = "Empty";
                     gTableOwner[t - 1] = 0;
-                    cout << "Deleted pending order.\n";
+                    cout << "Da xoa don hang.\n";
                 }
                 else
-                    cout << "Not found.\n";
+                    cout << "Khong tim thay don hang.\n";
             }
             else
             {
                 if (f->status == "Cooking" || f->status == "Done")
                 {
-                    cout << "Cannot delete while cooking or done.\n";
+                    cout << "Khong the xoa don hang dang nau hoac da hoan thanh.\n";
                 }
                 else
                 {
@@ -250,9 +249,9 @@ void displayQueue(Queue &q)
                         int t = rem.tableNumber;
                         if (!anyOrderForTable(q, t))
                             gTableStatus[t - 1] = "Empty";
-                        cout << "Deleted.\n";
+                        cout << "Da xoa.\n";
                     }
-                    else cout << "Not found.\n";
+                    else cout << "Khong tim thay don hang.\n";
                 }
             }
         }
@@ -260,13 +259,13 @@ void displayQueue(Queue &q)
         {
             // Edit: cho Queue hoặc Pending (không Cooking/Done)
             int id;
-            cout << "Nhap ID can sua: ";
+            cout << "ID don hang can sua: ";
             cin >> id;
 
             Order *f = findOrderByID(q, id);
             if (!f)
             {
-                for (int i = 0; i < ListPending.getSize(); ++i)
+                for (int i = 0; i < ListPending.getSize(); i++)
                     if (ListPending.getValue(i) == id) { f = &allOrders[id]; break; }
                 if (!f)
                 {
@@ -282,8 +281,7 @@ void displayQueue(Queue &q)
             getline(cin, name);
             if (name != ".") f->customerName = name;
 
-            if (f->status == "Cooking" || f->status == "Done")
-            {
+            if (f->status == "Cooking" || f->status == "Done"){
                 cout << "Khong the them mon khi dang nau hoac da xong.\n";
                 continue;
             }
@@ -342,7 +340,7 @@ void displayQueue(Queue &q)
         else if (act == 3)
         {
             // Temp bill: chuyển Pending -> Queue (Cooking/Wait)
-            cout << "Enter ID to temp-bill: ";
+            cout << "ID don hang can xuat hoa don tam thoi: ";
             int id;
             cin >> id;
             cin.ignore();
@@ -351,7 +349,7 @@ void displayQueue(Queue &q)
             if (!f)
             {
                 bool foundPending = false;
-                for (int i = 0; i < ListPending.getSize(); ++i)
+                for (int i = 0; i < ListPending.getSize(); i++)
                     if (ListPending.getValue(i) == id) { foundPending = true; break; }
 
                 if (foundPending)
@@ -359,17 +357,17 @@ void displayQueue(Queue &q)
                     Order &pend = allOrders[id];
                     pend.status = hasCooking(q) ? "Wait" : "Cooking";
                     if (!enqueue(q, pend))
-                        cout << "Queue full!\n";
+                        cout << "Hang doi da day!\n";
                     else
                     {
-                        for (int i = 0; i < ListPending.getSize(); ++i)
+                        for (int i = 0; i < ListPending.getSize(); i++)
                             if (ListPending.getValue(i) == id) { ListPending.removeAt(i); break; }
                         printBill(pend);
                         cout << "[Temp bill] -> " << pend.status << "\n";
                         startTimer(&q);
                     }
                 }
-                else cout << "Not found.\n";
+                else cout << "Khong tim thay don hang.\n";
             }
             else
             {
@@ -393,7 +391,7 @@ void displayQueue(Queue &q)
 // ===================================================================
 void searchCustomer(Queue &q)
 {
-    if (q.count == 0 && ListPending.getSize() == 0 && ListDone.getSize() == 0)
+    if (q.right < 0 && ListPending.getSize() == 0 && ListDone.getSize() == 0)
     {
         cout << "Khong co don nao.\n";
         return;
@@ -404,17 +402,17 @@ void searchCustomer(Queue &q)
     getline(cin, key);
     bool found = false;
 
-    for (int i = 0; i < q.count; ++i)
+    for (int i = 0; i <= q.right; i++)
     {
-        Order &o = q.orders[(q.front + i) % MAX];
+        Order &o = q.orders[i];
         if (containsNaive(o.customerName, key)) { printOrderRow(o); found = true; }
     }
-    for (int i = 0; i < ListPending.getSize(); ++i)
+    for (int i = 0; i < ListPending.getSize(); i++)
     {
         Order &o = allOrders[ListPending.getValue(i)];
         if (containsNaive(o.customerName, key)) { printOrderRow(o); found = true; }
     }
-    for (int i = 0; i < ListDone.getSize(); ++i)
+    for (int i = 0; i < ListDone.getSize(); i++)
     {
         Order &o = allOrders[ListDone.getValue(i)];
         if (containsNaive(o.customerName, key)) { printOrderRow(o); found = true; }
@@ -428,18 +426,17 @@ void searchCustomer(Queue &q)
 // ===================================================================
 void advanceTime(Queue &q, int seconds)
 {
-    if (seconds <= 0 || q.count == 0) return;
+    if (seconds <= 0 || q.right < 0) return;
 
     // tìm đơn đầu tiên đang Cooking
     int targetOffset = -1;
-    for (int i = 0; i < q.count; ++i)
+    for (int i = 0; i <= q.right; i++)
     {
-        int idx = (q.front + i) % MAX;
-        if (q.orders[idx].status == "Cooking") { targetOffset = i; break; }
+        if (q.orders[i].status == "Cooking") { targetOffset = i; break; }
     }
     if (targetOffset == -1) return;
 
-    int idxT = (q.front + targetOffset) % MAX;
+    int idxT = targetOffset;
     Order &o = q.orders[idxT];
 
     if (o.totalRemainingTime > 0)
@@ -455,22 +452,21 @@ void advanceTime(Queue &q, int seconds)
         Order doneOrder = o;
 
         // Dịch trái xoá phần tử targetOffset
-        for (int k = targetOffset; k < q.count - 1; ++k)
+        for (int k = targetOffset; k < q.right; ++k)
         {
-            int from = (q.front + k + 1) % MAX;
-            int to   = (q.front + k) % MAX;
+            int from = k + 1;
+            int to   = k;
             q.orders[to] = q.orders[from];
         }
-        q.rear = (q.rear - 1 + MAX) % MAX;
-        q.count--;
+        q.right--;
 
         allOrders[doneOrder.id] = doneOrder;
         ListDone.add(doneOrder.id);
 
         // Promote đơn Wait đầu tiên (nếu có)
-        for (int j = 0; j < q.count; ++j)
+        for (int j = 0; j <= q.right; ++j)
         {
-            int jdx = (q.front + j) % MAX;
+            int jdx = j;
             if (q.orders[jdx].status == "Wait")
             {
                 q.orders[jdx].status = "Cooking";
@@ -501,10 +497,9 @@ void startTimer(Queue *qp)
 // ===================================================================
 Order *findOrderByID(Queue &q, int id)
 {
-    for (int i = 0; i < q.count; ++i)
+    for (int i = 0; i <= q.right; i++)
     {
-        int idx = (q.front + i) % MAX;
-        if (q.orders[idx].id == id) return &q.orders[idx];
+        if (q.orders[i].id == id) return &q.orders[i];
     }
     return nullptr;
 }
@@ -516,14 +511,14 @@ int getLastOrderID()
     if (g_queuePtr)
     {
         Queue &q = *g_queuePtr;
-        for (int i = 0; i < q.count; ++i)
-            mx = max(mx, q.orders[(q.front + i) % MAX].id);
+        for (int i = 0; i <= q.right; i++)
+            mx = max(mx, q.orders[i].id);
     }
     // Pending
-    for (int i = 0; i < ListPending.getSize(); ++i)
+    for (int i = 0; i < ListPending.getSize(); i++)
         mx = max(mx, allOrders[ListPending.getValue(i)].id);
     // Done
-    for (int i = 0; i < ListDone.getSize(); ++i)
+    for (int i = 0; i < ListDone.getSize(); i++)
         mx = max(mx, allOrders[ListDone.getValue(i)].id);
     return mx;
 }

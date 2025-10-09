@@ -30,22 +30,46 @@ struct Order
     int totalRemainingTime; //tổng thời gian còn lại
 };
 
-void showMainMenu()
-{
+void header(){
     cout << "\x1b[36m"; // Mau cyan
     cout << "\n==============================================\n";
     cout << "       N H A   H A N G   V I E T   N A M\n";
     cout << "==============================================\x1b[0m\n";
+}
 
+void footer(){    
+    cout << "\x1b[36m----------------------------------------------\x1b[0m\n";
+    cout << "\x1b[32mNhap lua chon cua ban: \x1b[0m";
+}
+
+void showMainMenu(){
+    header();
     cout << "\x1b[33m1.\x1b[0m Them don hang\n";
-    cout << "\x1b[33m2.\x1b[0m Hien thi\n";
+    cout << "\x1b[33m2.\x1b[0m Quan ly\n";
     cout << "\x1b[33m3.\x1b[0m Tra cuu\n";
     cout << "\x1b[33m4.\x1b[0m Bao cao doanh thu & so luong mon ban ra\n";
     cout << "\x1b[33m5.\x1b[0m Thanh toan hoa don\n";
     cout << "\x1b[33m6.\x1b[0m Cap nhat thuc don\n";
     cout << "\x1b[31m0.\x1b[0m Thoat chuong trinh\n";
+    footer();
+}
 
-    cout << "\x1b[36m----------------------------------------------\x1b[0m\n";
-    cout << "\x1b[32mNhap lua chon cua ban: \x1b[0m";
+void manageMenu(){
+    header();
+    cout << "\x1b[33m1.\x1b[0m Tim theo ten mon an\n";
+    cout << "\x1b[33m2.\x1b[0m Tim theo ten khach hang\n";
+    cout << "\n\n\n\n"; 
+    cout << "\x1b[31m0.\x1b[0m Quay lai\n";
+    footer();
+}
+
+void updateMenu(){
+    header();
+    cout << "\x1b[33m1.\x1b[0m Sap xep thuc don theo gia tang dan\n";
+    cout << "\x1b[33m2.\x1b[0m Sap xep thuc don theo gia giam dan\n";
+    cout << "\x1b[33m3.\x1b[0m Cap nhat trang thai mon an\n";
+    cout << "\n\n\n"; 
+    cout << "\x1b[31m0.\x1b[0m Quay lai\n";    
+    footer();
 }
 

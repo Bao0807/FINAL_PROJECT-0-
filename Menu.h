@@ -24,7 +24,7 @@ void searchFoodNaive();
 
 
 void enter(){
-    cout << "\nPress Enter to continue...";
+    cout << "\nNhan Enter de tiep tuc...";
     cin.ignore();
     cin.get();
 }
@@ -120,7 +120,7 @@ void sortMenuAscending() { // Sắp xếp tăng dần theo giá
         menuList[j + 1] = key;
     }
 
-    cout << "\x1b[36m\nMenu sorted in ascending order by price\x1b[0m\n";
+    cout << "\x1b[36m\nMenu sap xep theo thu tu gia tang dan\x1b[0m\n";
     displayMenu();
     enter();
 }
@@ -136,25 +136,21 @@ void sortMenuDescending() { // Sắp xếp giảm dần theo giá
         menuList[j + 1] = key;
     }
 
-    cout << "\x1b[36m\nMenu sorted in descending order by price\x1b[0m\n";
+    cout << "\x1b[36m\nMenu sap xep theo thu tu gia giam dan\x1b[0m\n";
     displayMenu();
     enter();
 }
 
 void updateFoodStatus() {
-    cout << "\x1b[36m\n========= UPDATE FOOD STATUS =========\x1b[0m\n";
+    cout << "\x1b[36m\n========= CAP NHAT TINH TRANG MON AN =========\x1b[0m\n";
     displayMenu();
 
-    cout << "\x1b[33mEnter the food name or number to update status:\x1b[0m ";
+    cout << "\x1b[33mSo hoac ten mon an can cap nhat trang thai:\x1b[0m ";
     string input;
     getline(cin, input);
 
     // Xác định món ăn (bằng số hoặc tên)
     MenuItem found = getMenuItem(input);
-    if (found.foodName == "") {
-        cout << "\x1b[31mFood not found or currently unavailable!\x1b[0m\n";
-        return;
-    }
 
     // Tìm vị trí món ăn trong mảng menuList
     int index = -1;
@@ -165,13 +161,13 @@ void updateFoodStatus() {
         }
     }
 
-    if (index == -1) {
-        cout << "\x1b[31mError: could not locate food in menuList!\x1b[0m\n";
+    if (index == -1 || found.foodName == "") {
+        cout << "\x1b[31mKhong tim thay mon an!\x1b[0m\n";
         return;
     }
 
     // Hiện trạng thái hiện tại
-    cout << "\nCurrent status of \x1b[33m" << menuList[index].foodName << "\x1b[0m: ";
+    cout << "\nTrang thai hien tai: \x1b[33m" << menuList[index].foodName << "\x1b[0m: ";
     if (menuList[index].available)
         cout << "\x1b[32mAvailable\x1b[0m\n";
     else

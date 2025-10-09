@@ -17,10 +17,9 @@ bool removeOrderByID(Queue &q, int id, Order &out)
         return false;
     int foundIndex = -1;
     // tìm vị trí (offset i trong queue)
-    for (int i = 0; i < q.count; i++)
+    for (int i = 0; i <= q.right; i++)
     {
-        int idx = (q.front + i) % MAX;
-        if (q.orders[idx].id == id)
+        if (q.orders[i].id == id)
         {
             foundIndex = i;
             break;
@@ -30,19 +29,17 @@ bool removeOrderByID(Queue &q, int id, Order &out)
         return false;
 
     // sao chép order ra ngoài
-    int src = (q.front + foundIndex) % MAX;
-    out = q.orders[src];
+    out = q.orders[foundIndex];
 
     // dịch trái các phần tử sau foundIndex
-    for (int i = foundIndex; i < q.count - 1; i++)
+    for (int i = foundIndex; i < q.right; i++)
     {
-        int from = (q.front + i + 1) % MAX;
-        int to = (q.front + i) % MAX;
+        int from = i + 1;
+        int to = i;
         q.orders[to] = q.orders[from];
     }
-    // cập nhật rear và count
-    q.rear = (q.rear - 1 + MAX) % MAX;
-    q.count--;
+    // cập nhật right
+    q.right--;
 
     // xóa mọi gTableOwner trùng order.id (nếu có merge)
     for (int t = 0; t < NUM_TABLES; t++)
@@ -67,36 +64,35 @@ void printBill(const Order &o)
 {
     // Header (ANSI colors)
     cout << "\x1b[36m\n=================================================================\n"
-         << "                          RESTAURANT BILL           \n"
+         << "                          HOA DON THANH TOAN           \n"
          << "=================================================================\n\x1b[0m";
-    cout << "OrderID:\x1b[33m" << o.id << "\x1b[0m\n";
-    cout << "Customer:\x1b[32m" << o.customerName << "\x1b[0m\n";
-    cout << "Table:\x1b[33m" << o.tableNumber << "\x1b[0m\n";
+    cout << "ID: \x1b[33m" << o.id << "\x1b[0m\n";
+    cout << "Khach hang: \x1b[32m" << o.customerName << "\x1b[0m\n";
+    cout << "Ban: \x1b[33m" << o.tableNumber << "\x1b[0m\n";
     cout << "-----------------------------------------------------------------\n";
-    cout << "\x1b[35mNo\tFood Name\t\tQuantity\tPrice\x1b[0m\n";
+    cout << "\x1b[35mSTT\tTen mon\t\t\tSo luong\tGia\x1b[0m\n";
 
-    for (int i = 0; i < o.itemCount; i++)
-    {
+    for (int i = 0; i < o.itemCount; i++){
         cout << (i + 1) << ".\t" << o.items[i].foodName << "\t\t"
              << o.items[i].quantity << "\t\t" << formatPrice(o.items[i].subtotal) << "\n";
     }
 
     cout << "-----------------------------------------------------------------\n";
-    cout << "\x1b[31mTOTAL: " << formatPrice(o.total) << " VND\x1b[0m\n";
-    cout << "Status: " << o.status << "\n";
+    cout << "\x1b[31mTong cong: " << formatPrice(o.total) << " VND\x1b[0m\n";
+    cout << "Trang thai: " << o.status << "\n";
 
     // Progress section: chỉ 1 dòng tổng thời gian còn lại
-    cout << "\n\x1b[33mPROGRESS: \x1b[0m";
+    cout << "\n\x1b[33mTien do: \x1b[0m";
     if (o.itemCount == 0)
     {
-        cout << "(No items)\n";
+        cout << "(Khong co mon an)\n";
     }
     else
     {
         if (o.totalRemainingTime > 0)
-            cout << o.totalRemainingTime << "s remaining...\n";
+            cout << o.totalRemainingTime << "s con lai...\n";
         else
-            cout << "\x1b[32mDONE\x1b[0m\n";
+            cout << "\x1b[32mDa hoan thanh\x1b[0m\n";
     }
 
     cout << "\x1b[36m=================================================================\x1b[0m\n";
@@ -108,18 +104,18 @@ void saveBillToFile(const Order &o)
     ofstream fout("bill.txt", ios::app);
     if (!fout)
     {
-        cerr << "Cannot open bill.txt\n";
+        cerr << "Khon the mo bill.txt\n";
         return;
     }
 
     fout << "=====================================\n";
-    fout << "           RESTAURANT BILL           \n";
+    fout << "          HOA DON THANH TOAN          \n";
     fout << "=====================================\n";
-    fout << "OrderID:   " << o.id << "\n";
-    fout << "Customer:  " << o.customerName << "\n";
-    fout << "Table:     " << o.tableNumber << "\n";
+    fout << "ID:   " << o.id << "\n";
+    fout << "Khach hang:  " << o.customerName << "\n";
+    fout << "Ban:     " << o.tableNumber << "\n";
     fout << "-------------------------------------\n";
-    fout << "Food        Qty     Price\n";
+    fout << "Mon        So luong        Gia\n";
     fout << "-------------------------------------\n";
     for (int i = 0; i < o.itemCount; i++)
     {
@@ -155,9 +151,8 @@ void payment(Queue &q)
         baseId = gTableOwner[tableNo - 1];
     } else {
         // fallback: lấy id của đơn đầu tiên thuộc bàn này
-        for (int i = 0; i < q.count; i++) {
-            int idx = (q.front + i) % MAX;
-            Order &o = q.orders[idx];
+        for (int i = 0; i <= q.right; i++) {
+            Order &o = q.orders[i];
             if (o.tableNumber == tableNo) { baseId = o.id; break; }
         }
     }
@@ -174,9 +169,8 @@ void payment(Queue &q)
     int totalOrders = 0;
     long long previewTotal = 0;
     string customer = "";
-    for (int i = 0; i < q.count; i++) {
-        int idx = (q.front + i) % MAX;
-        Order &o = q.orders[idx];
+    for (int i = 0; i <= q.right; i++) {
+        Order &o = q.orders[i];
         if (o.id == baseId) {
             if (customer.empty()) customer = o.customerName;
             previewTotal += o.total;
@@ -186,9 +180,7 @@ void payment(Queue &q)
 
     if (totalOrders == 0) {
         cout << "Khong tim thay don nao trung ID de thanh toan.\n";
-        cin.ignore();
-        cout << "\nNhan Enter de tiep tuc...";
-        string tmp; getline(cin, tmp);
+        enter();
         return;
     }
 
@@ -201,7 +193,6 @@ void payment(Queue &q)
     char confirm; cin >> confirm;
     if (confirm != 'y' && confirm != 'Y') {
         cout << "Da huy thanh toan.\n";
-        cin.ignore();
         enter();
         return;
     }
@@ -217,9 +208,8 @@ void payment(Queue &q)
     merged.totalRemainingTime = 0;
 
     // Gộp items (hạn chế MAX_ITEMS: gộp trùng tên món)
-    for (int i = 0; i < q.count; i++) {
-        int idx = (q.front + i) % MAX;
-        Order &o = q.orders[idx];
+    for (int i = 0; i <= q.right; i++) {
+        Order &o = q.orders[i];
         if (o.id != baseId) continue;
 
         for (int j = 0; j < o.itemCount; j++) {
@@ -271,7 +261,6 @@ void payment(Queue &q)
         gTableStatus[tableNo - 1] = "Empty";
 
     cin.ignore();
-    cout << "\nNhan Enter de tiep tuc...";
-    string tmp; getline(cin, tmp);
+    enter();
 }
 

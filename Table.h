@@ -38,20 +38,17 @@ void makeSquare(string box[], const string &text1, const string &text2, bool isF
         string line = "|";
         string color = isFull ? "\x1b[41m" : "\x1b[42m"; // Full = đỏ, Empty = xanh
 
-        if (i == 0)
-        { // dòng in TABLE
+        if (i == 0){ // dòng in TABLE
             int space = (WIDTH - 2 - text1.size()) / 2;
             line += color + string(space, ' ') + text1 + string(WIDTH - 2 - space - text1.size(), ' ') + "\x1b[0m";
         }
-        else if (i == 3)
-        { // dòng in trạng thái
+        else if (i == 3){ // dòng in trạng thái
             int space = (WIDTH - 2 - text2.size()) / 2;
             line += color + string(space, ' ') + text2 + string(WIDTH - 2 - space - text2.size(), ' ') + "\x1b[0m";
-        }
-        else
-        {
+        } else {
             line += color + string(WIDTH - 2, ' ') + "\x1b[0m";
         }
+
         line += "|";
         box[i + 1] = line;
     }
@@ -60,13 +57,12 @@ void makeSquare(string box[], const string &text1, const string &text2, bool isF
 }
 
 void displayTables(){
-    cout << "\t\t\t\t\t     XU LI DON DAT HANG    \t\t\t\t\t\n";
     string boxes[NUM_TABLES][HEIGHT];
 
     // Tạo toàn bộ 10 ô (TABLE + trạng thái)
     for (int i = 0; i < NUM_TABLES; i++)
     {
-        string tname = "TABLE " + to_string(i + 1);
+        string tname = "BAN " + to_string(i + 1);
         string status = gTableStatus[i]; // lấy Empty / Full
         bool full = (status == "Full");
         makeSquare(boxes[i], tname, status, full);
@@ -108,13 +104,13 @@ int chooseTable()
 
             if (t < 1 || t > NUM_TABLES){
                 cout << "So ban khong hop le!\n";
-                cin.ignore(); cin.get();
+                enter();
                 continue;
             }
 
             if (gTableStatus[t - 1] == "Full"){
                 cout << "Ban so " << t << " da day!\n";
-                cin.ignore(); cin.get();
+                enter();
                 continue;
             }
 
@@ -122,8 +118,7 @@ int chooseTable()
             return t;
         } catch (const invalid_argument&) {
             cout << "Input khong hop le! Vui long nhap so.\n";
-            cin.ignore();
-            cin.get();
+            enter();
             continue;
         }
     }
@@ -137,10 +132,9 @@ bool anyOrderForTable(Queue &q, int tableNo)
     if (gTableOwner[tableNo - 1] != 0)
         return true;
 
-    for (int i = 0; i < q.count; i++)
+    for (int i = 0; i <= q.right; i++)
     {
-        int idx = (q.front + i) % MAX;
-        if (q.orders[idx].tableNumber == tableNo)
+        if (q.orders[i].tableNumber == tableNo)
             return true;
     }
     return false;

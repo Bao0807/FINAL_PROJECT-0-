@@ -25,27 +25,24 @@ int main()
 
         clearScreen();
 
-        switch (choice)
-        {
-        case 0:
-        {
+        switch (choice){
+        case 0:{
             cout << "Exit.\n";
             break;
         }
-        case 1:
-        {
+
+        case 1:{
             addOrder(q, idCounter);
             break;
         }
-        case 2:
-        {
+
+        case 2:{
             displayQueue(q);
             break;
         }
-        case 3:
-        {
-            cout << "1.Search Food    2.Search Customer    0.Back\n";
-            cout << "Choice: ";
+
+        case 3:{
+            manageMenu();
             int n;
             cin >> n;
             cin.ignore();
@@ -59,38 +56,32 @@ int main()
             }
             break;
         }
-        case 4:
-        {
+
+        case 4:{
             viewRevenueSummary();
             break;
         }
-        case 5:
-        {
+
+        case 5:{
             payment(q);
             break;
         }
-        case 6:
-        {
-            while (true)
-            {
-                clearScreen();
-                cout << "1.Sort menu ascending    2.Sort menu descending    3.Update status   0.Back\n";
-                cout << "Choice: ";
+
+        case 6:{
+            while (true){
+                updateMenu();
                 int n;
                 cin >> n;
                 cin.ignore();
-                if (n == 1)
-                {
+                if (n == 1){
                     sortMenuAscending();
                     continue;
                 }
-                else if (n == 2)
-                {
+                else if (n == 2){
                     sortMenuDescending();
                     continue;
                 }
-                else if (n == 3)
-                {
+                else if (n == 3){
                     updateFoodStatus();
                     continue;
                 }
@@ -101,7 +92,7 @@ int main()
         }
 
         default:
-            cout << "Invalid.\n";
+            cout << "Lua chon khong hop le.\n";
             cin.ignore();
             cin.get();
         }
